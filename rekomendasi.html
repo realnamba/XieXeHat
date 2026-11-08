@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekomendasi Strategis - Xie Xe Hat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @media print {
+            .app-sidebar, .no-print {
+                display: none !important;
+            }
+            .app-main {
+                padding: 0 !important;
+                background: white !important;
+            }
+            .card {
+                border: 1px solid #000 !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <!-- SIDEBAR -->
+        <aside class="app-sidebar">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <div class="nav-brand-logo" style="width: 34px; height: 34px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                </div>
+                <div>
+                    <strong style="font-size: 15px; color: var(--primary); display: block; line-height: 1.1;">Xie Xe Hat</strong>
+                    <span style="font-size: 9.5px; color: var(--text-muted); text-transform: uppercase;">Portal UMKM</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="dashboard.html">
+                        <span>📊</span> Beranda Analitik
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="asesmen.html">
+                        <span>📝</span> Asesmen Organisasi
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="enam-faktor.html">
+                        <span>🎯</span> 6 Faktor Penilaian
+                    </a>
+                </li>
+                <li class="sidebar-item active">
+                    <a href="rekomendasi.html">
+                        <span>💡</span> Rekomendasi Strategis
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="manajemen-umkm.html">
+                        <span>🏢</span> Manajemen UMKM
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="manajemen-karyawan.html">
+                        <span>👥</span> Manajemen Karyawan
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-profile">
+                <div class="user-avatar">BS</div>
+                <div style="flex-grow: 1; overflow: hidden;">
+                    <div id="userName" style="font-size: 13px; font-weight: 700; color: var(--text-heading); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+                        Budi Santoso
+                    </div>
+                    <div id="userRole" style="font-size: 11px; color: var(--text-muted);">
+                        Pemilik UMKM
+                    </div>
+                </div>
+                <button onclick="handleLogout()" style="background: none; border: none; cursor: pointer; color: var(--danger); font-size: 14px;" title="Keluar">
+                    🚪
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="app-main">
+            
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 28px;">
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 4px;">
+                        Rekomendasi Peningkatan Kesehatan Organisasi
+                    </h1>
+                    <p style="font-size: 13.5px; color: var(--text-muted);">
+                        Langkah intervensi manajerial yang disesuaikan dengan kondisi aktual hasil asesmen UMKM Anda.
+                    </p>
+                </div>
+                <div class="no-print">
+                    <button onclick="window.print()" class="btn btn-primary btn-sm">
+                        🖨️ Cetak / Unduh Laporan PDF
+                    </button>
+                </div>
+            </div>
+
+            <!-- Hero Recommendation Banner -->
+            <div class="card" style="margin-bottom: 28px; background-color: var(--primary-subtle); border-color: #D1E5E9;">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 20px;">
+                    <div>
+                        <div class="badge badge-primary" style="margin-bottom: 10px; background: white;">
+                            Diagnosis Klinis Organisasi
+                        </div>
+                        <h2 style="font-size: 20px; font-weight: 800; color: var(--text-heading); margin-bottom: 6px;">
+                            Indeks Vitalitas Organisasi: <span id="recOverallScore" style="color: var(--primary);">86%</span>
+                        </h2>
+                        <p style="font-size: 13px; color: var(--text-body); max-width: 600px; line-height: 1.55;">
+                            Organisasi berada dalam kategori <strong>Stabil & Sangat Sehat</strong>. Untuk mempertahankan stabilitas performa, fokuskan energi pada peningkatan keharmonisan komunikasi interpersonal antar staf.
+                        </p>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <span class="badge badge-sage" style="font-size: 13px; padding: 6px 16px;">
+                            Tingkat Risiko: Rendah
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Priority Grid -->
+            <div class="grid-2" style="gap: 24px; margin-bottom: 30px;">
+                
+                <!-- Area Prioritas Perbaikan (Bottom Factor) -->
+                <div class="card" style="border-left: 4px solid var(--warning);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <h3 style="font-size: 15px; font-weight: 800; color: var(--text-heading);">
+                            ⚠️ Prioritas 1: Area Perbaikan
+                        </h3>
+                        <span class="badge" style="background: var(--warning-subtle); color: #B45309; border-color: #FDE68A;">
+                            Skor Terendah: 78%
+                        </span>
+                    </div>
+
+                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px;">
+                        Hubungan Interpersonal (Relationships)
+                    </h4>
+                    <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+                        Terindikasi adanya gesekan komunikasi ringan atau rasa segan antar tim yang dapat memicu salah paham operasional.
+                    </p>
+
+                    <div style="background: var(--bg-base); padding: 14px; border-radius: var(--radius-sm); font-size: 12.5px;">
+                        <strong style="color: var(--text-heading); display: block; margin-bottom: 6px;">Aksi Rekomendasi Disarankan:</strong>
+                        <ul style="padding-left: 18px; color: var(--text-body); display: flex; flex-direction: column; gap: 6px;">
+                            <li>Agendakan sesi informal mingguan (coffee morning) untuk mencairkan komunikasi.</li>
+                            <li>Terapkan aturan kesepakatan etika komunikasi kerja yang saling menghormati.</li>
+                            <li>Buka kanal pelaporan keluhan tertutup langsung kepada pimpinan pemilik UMKM.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Faktor Unggulan (Top Factor) -->
+                <div class="card" style="border-left: 4px solid var(--accent-sage);">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+                        <h3 style="font-size: 15px; font-weight: 800; color: var(--text-heading);">
+                            🌟 Faktor Unggulan Utama
+                        </h3>
+                        <span class="badge badge-sage">
+                            Skor Tertinggi: 92%
+                        </span>
+                    </div>
+
+                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px;">
+                        Kejelasan Peran (Role Clarity)
+                    </h4>
+                    <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+                        Setiap anggota tim memahami dengan sangat baik tugas harian dan batasan tanggung jawab mereka dalam bisnis.
+                    </p>
+
+                    <div style="background: var(--bg-base); padding: 14px; border-radius: var(--radius-sm); font-size: 12.5px;">
+                        <strong style="color: var(--text-heading); display: block; margin-bottom: 6px;">Langkah Mempertahankan:</strong>
+                        <ul style="padding-left: 18px; color: var(--text-body); display: flex; flex-direction: column; gap: 6px;">
+                            <li>Dokumentasikan Standard Operating Procedure (SOP) tertulis agar konsisten.</li>
+                            <li>Jadikan kejelasan peran saat ini sebagai acuan pelatihan karyawan baru.</li>
+                            <li>Berikan apresiasi terbuka atas kepatuhan tim terhadap target kerja.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Roadmap Table -->
+            <div class="card">
+                <h3 style="font-size: 16px; font-weight: 800; color: var(--text-heading); margin-bottom: 14px;">
+                    Rencana Jadwal Intervensi Manajemen 30 Hari
+                </h3>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Periode</th>
+                                <th>Target Faktor</th>
+                                <th>Inisiatif Strategis</th>
+                                <th>Penanggung Jawab</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Minggu 1</td>
+                                <td>Hubungan Interpersonal</td>
+                                <td>Sesi Sharing Tim & Evaluasi Beban Kerja</td>
+                                <td>Pemilik Usaha</td>
+                                <td><span class="badge badge-sage">Siap Dilaksanakan</span></td>
+                            </tr>
+                            <tr>
+                                <td>Minggu 2</td>
+                                <td>Tuntutan Tugas</td>
+                                <td>Penyesuaian Jadwal Shift & Istirahat</td>
+                                <td>Supervisor Toko</td>
+                                <td><span class="badge badge-cyan">Dalam Proses</span></td>
+                            </tr>
+                            <tr>
+                                <td>Minggu 3</td>
+                                <td>Dukungan Atasan</td>
+                                <td>Penyusunan Jadwal One-on-One Bulanan</td>
+                                <td>Pemilik Usaha</td>
+                                <td><span class="badge">Terjadwal</span></td>
+                            </tr>
+                            <tr>
+                                <td>Minggu 4</td>
+                                <td>6 Faktor</td>
+                                <td>Asesmen Ulang Evaluasi Dampak Perubahan</td>
+                                <td>Seluruh Karyawan</td>
+                                <td><span class="badge">Evaluasi Akhir</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const overall = Store.getOverallScore();
+            document.getElementById('recOverallScore').textContent = overall + '%';
+            await Store.syncWithBackend();
+            const newOverall = Store.getOverallScore();
+            document.getElementById('recOverallScore').textContent = newOverall + '%';
+        });
+    </script>
+</body>
+</html>
+

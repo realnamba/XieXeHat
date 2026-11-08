@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Xie Xe Hat</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <!-- SIDEBAR -->
+        <aside class="app-sidebar">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <div class="nav-brand-logo" style="width: 34px; height: 34px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                </div>
+                <div>
+                    <strong style="font-size: 15px; color: var(--primary); display: block; line-height: 1.1;">Xie Xe Hat</strong>
+                    <span style="font-size: 9.5px; color: var(--text-muted); text-transform: uppercase;">Portal UMKM</span>
+                </div>
+            </div>
+
+            <a href="asesmen.html" class="btn btn-primary" style="font-size: 13px; margin-bottom: 12px; justify-content: flex-start;">
+                <span>+</span> Isi Asesmen Organisasi
+            </a>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-item active">
+                    <a href="dashboard.html">
+                        <span>📊</span> Beranda Analitik
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="asesmen.html">
+                        <span>📝</span> Asesmen Organisasi
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="enam-faktor.html">
+                        <span>🎯</span> 6 Faktor Penilaian
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="rekomendasi.html">
+                        <span>💡</span> Rekomendasi Strategis
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="manajemen-umkm.html">
+                        <span>🏢</span> Manajemen UMKM
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="manajemen-karyawan.html">
+                        <span>👥</span> Manajemen Karyawan
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-profile">
+                <div class="user-avatar">BS</div>
+                <div style="flex-grow: 1; overflow: hidden;">
+                    <div id="userName" style="font-size: 13px; font-weight: 700; color: var(--text-heading); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+                        Budi Santoso
+                    </div>
+                    <div id="userRole" style="font-size: 11px; color: var(--text-muted);">
+                        Pemilik UMKM
+                    </div>
+                </div>
+                <button onclick="handleLogout()" style="background: none; border: none; cursor: pointer; color: var(--danger); font-size: 14px;" title="Keluar">
+                    🚪
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="app-main">
+            
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 28px;">
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 4px;">
+                        Ringkasan Kesehatan Organisasi
+                    </h1>
+                    <p style="font-size: 13px; color: var(--text-muted);">
+                        Status aktual iklim kerja dan vitalitas usaha: <strong id="umkmName" style="color: var(--primary);">Kopi Kenangan Sehat</strong>
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <a href="rekomendasi.html" class="btn btn-outline btn-sm">Lihat Rekomendasi</a>
+                    <a href="asesmen.html" class="btn btn-primary btn-sm">Mulai Survei Baru</a>
+                </div>
+            </div>
+
+            <!-- Health Score Banner Card -->
+            <div class="card" style="margin-bottom: 24px; background: linear-gradient(135deg, #FFFFFF 0%, #F8FAFC 100%);">
+                <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px;">
+                    
+                    <div style="display: flex; align-items: center; gap: 24px;">
+                        <!-- SVG Meter -->
+                        <div style="position: relative; width: 100px; height: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center;">
+                            <svg width="100" height="100" viewBox="0 0 100 100" style="transform: rotate(-90deg);">
+                                <circle cx="50" cy="50" r="42" stroke="#E2E8F0" stroke-width="10" fill="none"/>
+                                <circle id="scoreCircle" cx="50" cy="50" r="42" stroke="#114B5F" stroke-width="10" stroke-dasharray="263.8" stroke-dashoffset="36.9" stroke-linecap="round" fill="none"/>
+                            </svg>
+                            <div style="position: absolute; text-align: center;">
+                                <span id="scoreText" style="font-size: 24px; font-weight: 800; color: var(--primary); display: block; line-height: 1;">86%</span>
+                                <span style="font-size: 9px; text-transform: uppercase; font-weight: 700; color: var(--text-muted);">Skor Total</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 6px;">
+                                <span id="scoreBadge" class="badge badge-sage">Kategori: Sangat Sehat</span>
+                                <span style="font-size: 12px; color: var(--text-muted);">Diperbarui 04 Nov 2026</span>
+                            </div>
+                            <h2 style="font-size: 18px; font-weight: 800; color: var(--text-heading); margin-bottom: 6px;">
+                                Kondisi Psikososial Tim Berada Pada Tingkat Optimal
+                            </h2>
+                            <p style="font-size: 13px; color: var(--text-muted); max-width: 550px;">
+                                Kejelasan peran dan dukungan pimpinan sangat solid. Tingkatkan sedikit kenyamanan pada faktor tuntutan beban kerja untuk mencegah kejenuhan jangka panjang.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a href="rekomendasi.html" class="btn btn-outline" style="border-color: var(--primary); color: var(--primary);">
+                            Rencana Aksi Intervensi →
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4 Summary Metrics -->
+            <div class="grid-4" style="margin-bottom: 28px;">
+                <div class="card" style="padding: 18px;">
+                    <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">TOTAL KARYAWAN</span>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--text-heading); margin-top: 4px;">8 Orang</div>
+                    <span style="font-size: 11px; color: var(--accent-sage);">● Seluruh tim terdaftar</span>
+                </div>
+                <div class="card" style="padding: 18px;">
+                    <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">PARTISIPASI ASESMEN</span>
+                    <div style="font-size: 22px; font-weight: 800; color: var(--primary); margin-top: 4px;">87.5%</div>
+                    <span style="font-size: 11px; color: var(--text-muted);">7 dari 8 sudah mengisi</span>
+                </div>
+                <div class="card" style="padding: 18px;">
+                    <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">FAKTOR TERUNGGUL</span>
+                    <div style="font-size: 17px; font-weight: 800; color: var(--accent-sage); margin-top: 4px;">Kejelasan Peran</div>
+                    <span style="font-size: 11px; color: var(--text-muted);">Skor indeks: 92%</span>
+                </div>
+                <div class="card" style="padding: 18px;">
+                    <span style="font-size: 11px; font-weight: 600; color: var(--text-muted);">AREA PERBAIKAN</span>
+                    <div style="font-size: 17px; font-weight: 800; color: var(--warning); margin-top: 4px;">Relasi Rekan</div>
+                    <span style="font-size: 11px; color: var(--text-muted);">Skor indeks: 78%</span>
+                </div>
+            </div>
+
+            <!-- 6 Factors Detailed Breakdown -->
+            <div class="card" style="margin-bottom: 28px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <div>
+                        <h3 style="font-size: 16px; font-weight: 800; color: var(--text-heading);">
+                            Rincian Skor 6 Faktor Kesehatan Organisasi
+                        </h3>
+                        <p style="font-size: 12.5px; color: var(--text-muted);">Berdasarkan data kuesioner asesmen terdistribusi</p>
+                    </div>
+                    <a href="enam-faktor.html" style="font-size: 13px; font-weight: 600; color: var(--primary);">Lihat Metodologi →</a>
+                </div>
+
+                <div class="grid-2" style="gap: 24px;">
+                    
+                    <!-- Factor 1 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span style="font-weight: 600; color: var(--text-heading);">1. Tuntutan Tugas (Demands)</span>
+                            <strong id="scoreDemands" style="color: var(--primary);">82%</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden;">
+                            <div id="barDemands" style="width: 82%; height: 100%; background: var(--primary); border-radius: 99px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Factor 2 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span style="font-weight: 600; color: var(--text-heading);">2. Kendali Kerja (Control)</span>
+                            <strong id="scoreControl" style="color: var(--accent-sage);">88%</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden;">
+                            <div id="barControl" style="width: 88%; height: 100%; background: var(--accent-sage); border-radius: 99px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Factor 3 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span style="font-weight: 600; color: var(--text-heading);">3. Dukungan Atasan (Manager Support)</span>
+                            <strong id="scoreManager" style="color: var(--accent-cyan-dark);">90%</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden;">
+                            <div id="barManager" style="width: 90%; height: 100%; background: var(--accent-cyan); border-radius: 99px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Factor 4 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span style="font-weight: 600; color: var(--text-heading);">4. Dukungan Rekan (Peer Support)</span>
+                            <strong id="scorePeer" style="color: var(--primary);">85%</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden;">
+                            <div id="barPeer" style="width: 85%; height: 100%; background: var(--primary); border-radius: 99px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Factor 5 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span style="font-weight: 600; color: var(--text-heading);">5. Hubungan Interpersonal (Relationships)</span>
+                            <strong id="scoreRel" style="color: var(--warning);">78%</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden;">
+                            <div id="barRel" style="width: 78%; height: 100%; background: var(--warning); border-radius: 99px;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Factor 6 -->
+                    <div>
+                        <div style="display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 6px;">
+                            <span style="font-weight: 600; color: var(--text-heading);">6. Kejelasan Peran (Role Clarity)</span>
+                            <strong id="scoreRole" style="color: var(--accent-sage);">92%</strong>
+                        </div>
+                        <div style="width: 100%; height: 8px; background: #E2E8F0; border-radius: 99px; overflow: hidden;">
+                            <div id="barRole" style="width: 92%; height: 100%; background: var(--accent-sage); border-radius: 99px;"></div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Action footer quick buttons -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; font-size: 12.5px; color: var(--text-muted);">
+                <span>Xie Xe Hat v1.0 • Platform Diagnostik Kesehatan Organisasi UMKM</span>
+                <a href="index.html" style="color: var(--primary); font-weight: 600;">Lihat Beranda Publik</a>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        function renderDashboard() {
+            const data = Store.get();
+            const overall = Store.getOverallScore();
+            const cat = Store.getHealthCategory(overall);
+
+            document.getElementById('scoreText').textContent = overall + '%';
+            document.getElementById('scoreBadge').textContent = 'Kategori: ' + cat.label;
+            document.getElementById('scoreBadge').className = 'badge ' + cat.class;
+
+            const offset = 263.8 * (1 - (overall / 100));
+            document.getElementById('scoreCircle').style.strokeDashoffset = offset;
+
+            const s = data.scores;
+            document.getElementById('scoreDemands').textContent = s.demands + '%';
+            document.getElementById('barDemands').style.width = s.demands + '%';
+
+            document.getElementById('scoreControl').textContent = s.control + '%';
+            document.getElementById('barControl').style.width = s.control + '%';
+
+            document.getElementById('scoreManager').textContent = s.managerSupport + '%';
+            document.getElementById('barManager').style.width = s.managerSupport + '%';
+
+            document.getElementById('scorePeer').textContent = s.peerSupport + '%';
+            document.getElementById('barPeer').style.width = s.peerSupport + '%';
+
+            document.getElementById('scoreRel').textContent = s.relationships + '%';
+            document.getElementById('barRel').style.width = s.relationships + '%';
+
+            document.getElementById('scoreRole').textContent = s.roleClarity + '%';
+            document.getElementById('barRole').style.width = s.roleClarity + '%';
+
+            if (data.user && data.user.umkm) {
+                document.getElementById('umkmName').textContent = data.user.umkm;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderDashboard();
+            await Store.syncWithBackend();
+            renderDashboard();
+        });
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asesmen Organisasi - Xie Xe Hat</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .likert-group {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .likert-item {
+            text-align: center;
+        }
+        .likert-label {
+            display: block;
+            padding: 10px 4px;
+            border: 1px solid var(--border-hover);
+            border-radius: var(--radius-sm);
+            background: #FFFFFF;
+            cursor: pointer;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: var(--text-body);
+            transition: all 0.2s ease;
+        }
+        .likert-item input[type="radio"] {
+            display: none;
+        }
+        .likert-item input[type="radio"]:checked + .likert-label {
+            background-color: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+        }
+        .question-card {
+            background: #FFFFFF;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 22px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <!-- SIDEBAR -->
+        <aside class="app-sidebar">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <div class="nav-brand-logo" style="width: 34px; height: 34px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                </div>
+                <div>
+                    <strong style="font-size: 15px; color: var(--primary); display: block; line-height: 1.1;">Xie Xe Hat</strong>
+                    <span style="font-size: 9.5px; color: var(--text-muted); text-transform: uppercase;">Portal UMKM</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="dashboard.html">
+                        <span>📊</span> Beranda Analitik
+                    </a>
+                </li>
+                <li class="sidebar-item active">
+                    <a href="asesmen.html">
+                        <span>📝</span> Asesmen Organisasi
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="enam-faktor.html">
+                        <span>🎯</span> 6 Faktor Penilaian
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="rekomendasi.html">
+                        <span>💡</span> Rekomendasi Strategis
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="manajemen-umkm.html">
+                        <span>🏢</span> Manajemen UMKM
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="manajemen-karyawan.html">
+                        <span>👥</span> Manajemen Karyawan
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-profile">
+                <div class="user-avatar">BS</div>
+                <div style="flex-grow: 1; overflow: hidden;">
+                    <div id="userName" style="font-size: 13px; font-weight: 700; color: var(--text-heading); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+                        Budi Santoso
+                    </div>
+                    <div id="userRole" style="font-size: 11px; color: var(--text-muted);">
+                        Pemilik UMKM
+                    </div>
+                </div>
+                <button onclick="handleLogout()" style="background: none; border: none; cursor: pointer; color: var(--danger); font-size: 14px;" title="Keluar">
+                    🚪
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="app-main">
+            
+            <div style="max-width: 800px; margin: 0 auto;">
+                
+                <div style="margin-bottom: 28px;">
+                    <div class="badge badge-primary" style="margin-bottom: 10px;">Kuesioner Terstandar</div>
+                    <h1 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 6px;">
+                        Kuesioner Asesmen Kesehatan Organisasi
+                    </h1>
+                    <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5;">
+                        Pilihlah tingkat persetujuan yang paling mencerminkan kondisi aktual di tempat kerja Anda. Jawaban Anda diproses secara objektif untuk menghitung indeks 6 faktor kesehatan organisasi.
+                    </p>
+                </div>
+
+                <form id="assessmentForm" onsubmit="submitAssessment(event)">
+                    
+                    <!-- Question 1: Demands -->
+                    <div class="question-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="badge badge-primary">Faktor 1: Tuntutan Tugas (Demands)</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">Bobot 16.6%</span>
+                        </div>
+                        <p style="font-size: 14px; font-weight: 600; color: var(--text-heading); line-height: 1.45;">
+                            1. Ritme kerja, volume tugas harian, dan tenggat waktu (deadline) di tempat kerja terkelola dengan wajar tanpa menyebabkan kelelahan ekstrem.
+                        </p>
+                        <div class="likert-group">
+                            <div class="likert-item">
+                                <input type="radio" id="q1_1" name="q1" value="1" required>
+                                <label for="q1_1" class="likert-label">1 - Sangat Buruk</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q1_2" name="q1" value="2">
+                                <label for="q1_2" class="likert-label">2 - Kurang</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q1_3" name="q1" value="3">
+                                <label for="q1_3" class="likert-label">3 - Cukup</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q1_4" name="q1" value="4" checked>
+                                <label for="q1_4" class="likert-label">4 - Baik</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q1_5" name="q1" value="5">
+                                <label for="q1_5" class="likert-label">5 - Sangat Baik</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 2: Control -->
+                    <div class="question-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="badge badge-sage">Faktor 2: Kendali Kerja (Control)</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">Bobot 16.6%</span>
+                        </div>
+                        <p style="font-size: 14px; font-weight: 600; color: var(--text-heading); line-height: 1.45;">
+                            2. Saya memiliki otonomi dan kebebasan yang memadai dalam menentukan metode penyelesaian pekerjaan serta mengatur urutan prioritas kerja.
+                        </p>
+                        <div class="likert-group">
+                            <div class="likert-item">
+                                <input type="radio" id="q2_1" name="q2" value="1" required>
+                                <label for="q2_1" class="likert-label">1 - Sangat Buruk</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q2_2" name="q2" value="2">
+                                <label for="q2_2" class="likert-label">2 - Kurang</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q2_3" name="q2" value="3">
+                                <label for="q2_3" class="likert-label">3 - Cukup</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q2_4" name="q2" value="4">
+                                <label for="q2_4" class="likert-label">4 - Baik</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q2_5" name="q2" value="5" checked>
+                                <label for="q2_5" class="likert-label">5 - Sangat Baik</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 3: Manager Support -->
+                    <div class="question-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="badge badge-cyan">Faktor 3: Dukungan Atasan (Manager Support)</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">Bobot 16.6%</span>
+                        </div>
+                        <p style="font-size: 14px; font-weight: 600; color: var(--text-heading); line-height: 1.45;">
+                            3. Pimpinan usaha/manajer memberikan bimbingan teknis yang jelas, umpan balik yang membangun, dan apresiasi atas kontribusi tim.
+                        </p>
+                        <div class="likert-group">
+                            <div class="likert-item">
+                                <input type="radio" id="q3_1" name="q3" value="1" required>
+                                <label for="q3_1" class="likert-label">1 - Sangat Buruk</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q3_2" name="q3" value="2">
+                                <label for="q3_2" class="likert-label">2 - Kurang</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q3_3" name="q3" value="3">
+                                <label for="q3_3" class="likert-label">3 - Cukup</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q3_4" name="q3" value="4">
+                                <label for="q3_4" class="likert-label">4 - Baik</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q3_5" name="q3" value="5" checked>
+                                <label for="q3_5" class="likert-label">5 - Sangat Baik</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 4: Peer Support -->
+                    <div class="question-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="badge badge-primary">Faktor 4: Dukungan Rekan (Peer Support)</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">Bobot 16.6%</span>
+                        </div>
+                        <p style="font-size: 14px; font-weight: 600; color: var(--text-heading); line-height: 1.45;">
+                            4. Rekan kerja saling mendukung, kompak dalam berkolaborasi, dan siap saling membantu ketika salah satu anggota mengalami hambatan tugas.
+                        </p>
+                        <div class="likert-group">
+                            <div class="likert-item">
+                                <input type="radio" id="q4_1" name="q4" value="1" required>
+                                <label for="q4_1" class="likert-label">1 - Sangat Buruk</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q4_2" name="q4" value="2">
+                                <label for="q4_2" class="likert-label">2 - Kurang</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q4_3" name="q4" value="3">
+                                <label for="q4_3" class="likert-label">3 - Cukup</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q4_4" name="q4" value="4" checked>
+                                <label for="q4_4" class="likert-label">4 - Baik</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q4_5" name="q4" value="5">
+                                <label for="q4_5" class="likert-label">5 - Sangat Baik</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 5: Relationships -->
+                    <div class="question-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="badge badge-sage">Faktor 5: Hubungan Interpersonal</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">Bobot 16.6%</span>
+                        </div>
+                        <p style="font-size: 14px; font-weight: 600; color: var(--text-heading); line-height: 1.45;">
+                            5. Iklim komunikasi di tempat kerja terbebas dari perpecahan, saling menjatuhkan, maupun perilaku intimidasi (bullying/harassment).
+                        </p>
+                        <div class="likert-group">
+                            <div class="likert-item">
+                                <input type="radio" id="q5_1" name="q5" value="1" required>
+                                <label for="q5_1" class="likert-label">1 - Sangat Buruk</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q5_2" name="q5" value="2">
+                                <label for="q5_2" class="likert-label">2 - Kurang</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q5_3" name="q5" value="3">
+                                <label for="q5_3" class="likert-label">3 - Cukup</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q5_4" name="q5" value="4" checked>
+                                <label for="q5_4" class="likert-label">4 - Baik</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q5_5" name="q5" value="5">
+                                <label for="q5_5" class="likert-label">5 - Sangat Baik</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Question 6: Role Clarity -->
+                    <div class="question-card">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span class="badge badge-cyan">Faktor 6: Kejelasan Peran (Role Clarity)</span>
+                            <span style="font-size: 11px; color: var(--text-muted);">Bobot 16.6%</span>
+                        </div>
+                        <p style="font-size: 14px; font-weight: 600; color: var(--text-heading); line-height: 1.45;">
+                            6. Saya memahami dengan pasti lingkup tugas pokok, target keluaran kerja, serta wewenang saya tanpa tumpang tindih dengan anggota tim lain.
+                        </p>
+                        <div class="likert-group">
+                            <div class="likert-item">
+                                <input type="radio" id="q6_1" name="q6" value="1" required>
+                                <label for="q6_1" class="likert-label">1 - Sangat Buruk</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q6_2" name="q6" value="2">
+                                <label for="q6_2" class="likert-label">2 - Kurang</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q6_3" name="q6" value="3">
+                                <label for="q6_3" class="likert-label">3 - Cukup</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q6_4" name="q6" value="4">
+                                <label for="q6_4" class="likert-label">4 - Baik</label>
+                            </div>
+                            <div class="likert-item">
+                                <input type="radio" id="q6_5" name="q6" value="5" checked>
+                                <label for="q6_5" class="likert-label">5 - Sangat Baik</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px;">
+                        <a href="dashboard.html" class="btn btn-outline">Batal</a>
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 28px;">
+                            Hitung & Simpan Asesmen
+                        </button>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </main>
+    </div>
+
+    <!-- SUCCESS MODAL -->
+    <div id="successModal" class="modal-overlay">
+        <div class="modal-content" style="text-align: center;">
+            <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--accent-mint-subtle); color: var(--accent-sage); display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 16px;">
+                ✓
+            </div>
+            <h3 style="font-size: 18px; font-weight: 800; color: var(--text-heading); margin-bottom: 8px;">
+                Asesmen Berhasil Disimpan!
+            </h3>
+            <p id="modalDesc" style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
+                Skor kesehatan organisasi Anda telah dikalkulasi ulang secara otomatis.
+            </p>
+            <div style="display: flex; justify-content: center; gap: 10px;">
+                <a href="dashboard.html" class="btn btn-primary">Buka Dashboard</a>
+                <a href="rekomendasi.html" class="btn btn-outline">Lihat Rekomendasi</a>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        async function submitAssessment(e) {
+            e.preventDefault();
+            
+            // Read 6 values (1 to 5)
+            const v1 = parseInt(document.querySelector('input[name="q1"]:checked')?.value || 4);
+            const v2 = parseInt(document.querySelector('input[name="q2"]:checked')?.value || 4);
+            const v3 = parseInt(document.querySelector('input[name="q3"]:checked')?.value || 4);
+            const v4 = parseInt(document.querySelector('input[name="q4"]:checked')?.value || 4);
+            const v5 = parseInt(document.querySelector('input[name="q5"]:checked')?.value || 4);
+            const v6 = parseInt(document.querySelector('input[name="q6"]:checked')?.value || 4);
+
+            // Convert to percentage (value / 5 * 100)
+            const newScores = {
+                demands: Math.round((v1 / 5) * 100),
+                control: Math.round((v2 / 5) * 100),
+                managerSupport: Math.round((v3 / 5) * 100),
+                peerSupport: Math.round((v4 / 5) * 100),
+                relationships: Math.round((v5 / 5) * 100),
+                roleClarity: Math.round((v6 / 5) * 100)
+            };
+
+            await Store.saveAssessment(newScores);
+
+            const overall = Store.getOverallScore();
+            document.getElementById('modalDesc').innerHTML = `Skor kesehatan organisasi terbaru: <strong style="color: var(--primary); font-size: 16px;">${overall}%</strong>. Data asesmen telah berhasil dicatat ke database.`;
+            document.getElementById('successModal').classList.add('active');
+        }
+    </script>
+</body>
+</html>
+

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manajemen Karyawan - Xie Xe Hat</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div class="app-layout">
+        
+        <!-- SIDEBAR -->
+        <aside class="app-sidebar">
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                <div class="nav-brand-logo" style="width: 34px; height: 34px;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
+                    </svg>
+                </div>
+                <div>
+                    <strong style="font-size: 15px; color: var(--primary); display: block; line-height: 1.1;">Xie Xe Hat</strong>
+                    <span style="font-size: 9.5px; color: var(--text-muted); text-transform: uppercase;">Portal UMKM</span>
+                </div>
+            </div>
+
+            <ul class="sidebar-nav">
+                <li class="sidebar-item">
+                    <a href="dashboard.html">
+                        <span>📊</span> Beranda Analitik
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="asesmen.html">
+                        <span>📝</span> Asesmen Organisasi
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="enam-faktor.html">
+                        <span>🎯</span> 6 Faktor Penilaian
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="rekomendasi.html">
+                        <span>💡</span> Rekomendasi Strategis
+                    </a>
+                </li>
+                <li class="sidebar-item">
+                    <a href="manajemen-umkm.html">
+                        <span>🏢</span> Manajemen UMKM
+                    </a>
+                </li>
+                <li class="sidebar-item active">
+                    <a href="manajemen-karyawan.html">
+                        <span>👥</span> Manajemen Karyawan
+                    </a>
+                </li>
+            </ul>
+
+            <div class="sidebar-profile">
+                <div class="user-avatar">BS</div>
+                <div style="flex-grow: 1; overflow: hidden;">
+                    <div id="userName" style="font-size: 13px; font-weight: 700; color: var(--text-heading); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
+                        Budi Santoso
+                    </div>
+                    <div id="userRole" style="font-size: 11px; color: var(--text-muted);">
+                        Pemilik UMKM
+                    </div>
+                </div>
+                <button onclick="handleLogout()" style="background: none; border: none; cursor: pointer; color: var(--danger); font-size: 14px;" title="Keluar">
+                    🚪
+                </button>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT AREA -->
+        <main class="app-main">
+            
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 28px;">
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 4px;">
+                        Daftar Karyawan Terdaftar
+                    </h1>
+                    <p style="font-size: 13.5px; color: var(--text-muted);">
+                        Kelola data staf dan monitor status keikutsertaan asesmen kesehatan organisasi.
+                    </p>
+                </div>
+                <button onclick="openModal()" class="btn btn-primary btn-sm">
+                    + Daftarkan Karyawan Baru
+                </button>
+            </div>
+
+            <!-- Table of Employees -->
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Karyawan</th>
+                            <th>Posisi / Bagian</th>
+                            <th>Status Asesmen</th>
+                            <th>Tanggal Pengisian</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="empTableBody">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- MODAL TAMBAH KARYAWAN -->
+    <div id="empModal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h3 style="font-size: 17px; font-weight: 800; color: var(--text-heading);">Daftarkan Karyawan Baru</h3>
+                <button onclick="closeModal()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted);">✕</button>
+            </div>
+
+            <form onsubmit="saveNewEmployee(event)">
+                <div class="form-group">
+                    <label for="newEmpName">Nama Lengkap</label>
+                    <input type="text" id="newEmpName" class="form-control" placeholder="Contoh: Rian Pratama" required>
+                </div>
+                <div class="form-group">
+                    <label for="newEmpRole">Jabatan / Divisi</label>
+                    <input type="text" id="newEmpRole" class="form-control" placeholder="Contoh: Barista, Kasir, Dapur" required>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 24px;">
+                    <button type="button" onclick="closeModal()" class="btn btn-outline">Batal</button>
+                    <button type="submit" class="btn btn-primary">Daftarkan Karyawan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        function renderTable() {
+            const list = Store.get().employees || [];
+            const tbody = document.getElementById('empTableBody');
+            tbody.innerHTML = '';
+
+            list.forEach((item, idx) => {
+                const tr = document.createElement('tr');
+                const badgeClass = item.status === 'Selesai' ? 'badge-sage' : 'badge-danger';
+                tr.innerHTML = `
+                    <td style="font-weight: 700; color: var(--text-muted);">${idx + 1}</td>
+                    <td><strong style="color: var(--text-heading);">${item.name}</strong></td>
+                    <td><span class="badge badge-primary">${item.role}</span></td>
+                    <td><span class="badge ${badgeClass}">${item.status}</span></td>
+                    <td style="color: var(--text-muted); font-size: 12.5px;">${item.date}</td>
+                    <td>
+                        <button onclick="deleteEmployee(${item.id})" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FECACA; padding: 4px 10px;">
+                            Hapus
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function openModal() {
+            document.getElementById('empModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('empModal').classList.remove('active');
+        }
+
+        async function saveNewEmployee(e) {
+            e.preventDefault();
+            const name = document.getElementById('newEmpName').value.trim();
+            const role = document.getElementById('newEmpRole').value.trim();
+
+            await Store.saveEmployee({
+                name: name,
+                role: role
+            });
+            closeModal();
+            renderTable();
+        }
+
+        async function deleteEmployee(id) {
+            if (confirm('Hapus karyawan ini dari database?')) {
+                await Store.deleteEmployee(id);
+                renderTable();
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            renderTable();
+            await Store.syncWithBackend();
+            renderTable();
+        });
+    </script>
+</body>
+</html>
+
