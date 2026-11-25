@@ -7,7 +7,10 @@
 
 const STORAGE_KEY = 'xiexehat_store_v2';
 const API_URL = 'api.php';
-const DEFAULT_N8N_WEBHOOK_URL = ''; // Isi URL Webhook n8n Anda di sini atau atur via UI
+const WEBHOOK_PROXY_URL = 'webhook-proxy.php';
+// Harus sama persis dengan konstanta WEBHOOK_SECRET di webhook-proxy.php
+const CLIENT_HMAC_SECRET = 'GANTI_DENGAN_SECRET_ACAK_MIN_32_KARAKTER';
+const WEBHOOK_COOLDOWN_MS = 60000; // Rate-limit client-side: 60 detik per akun
 
 /**
  * Katalog Lengkap 6 Dimensi Kesehatan Organisasi (Standar HSE)
@@ -202,13 +205,12 @@ function createDefaultStore() {
 
     return {
         currentSessionEmail: 'owner@tokosehat.id',
-        webhookUrl: DEFAULT_N8N_WEBHOOK_URL,
+        lastWebhookSentAt: {},
         accounts: {
             'owner@tokosehat.id': {
                 user: {
                     name: 'Budi Santoso',
                     email: 'owner@tokosehat.id',
-                    password: 'password123',
                     role: 'owner',
                     umkm: 'Kopi Kenangan Sehat'
                 },
@@ -255,6 +257,17 @@ const UI = {
         }
     },
 
+    escapeHTML(str) {
+        return String(str ?? '').replace(/[&<>"'`]/g, ch => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;',
+            '`': '&#96;'
+        }[ch]));
+    },
+
     showToast(title, message, type = 'info') {
         let container = document.getElementById('toastContainer');
         if (!container) {
@@ -273,14 +286,34 @@ const UI = {
 
         const toast = document.createElement('div');
         toast.className = `toast toast-${type}`;
-        toast.innerHTML = `
-            <div style="font-size: 16px; line-height: 1.2;">${icons[type] || icons.info}</div>
-            <div style="flex: 1;">
-                <div style="font-weight: 700; color: var(--text-heading); margin-bottom: 2px;">${title}</div>
-                <div style="font-size: 12px; color: var(--text-muted); line-height: 1.4;">${message}</div>
-            </div>
-            <button onclick="this.parentElement.remove()" style="background:none;border:none;cursor:pointer;color:var(--text-subtle);font-size:14px;">✕</button>
-        `;
+
+        const iconEl = document.createElement('div');
+        iconEl.style.cssText = 'font-size: 16px; line-height: 1.2;';
+        iconEl.textContent = icons[type] || icons.info;
+
+        const bodyEl = document.createElement('div');
+        bodyEl.style.flex = '1';
+
+        const titleEl = document.createElement('div');
+        titleEl.style.cssText = 'font-weight: 700; color: var(--text-heading); margin-bottom: 2px;';
+        titleEl.textContent = title;
+
+        const msgEl = document.createElement('div');
+        msgEl.style.cssText = 'font-size: 12px; color: var(--text-muted); line-height: 1.4;';
+        msgEl.textContent = message;
+
+        bodyEl.appendChild(titleEl);
+        bodyEl.appendChild(msgEl);
+
+        const closeBtn = document.createElement('button');
+        closeBtn.type = 'button';
+        closeBtn.textContent = '✕';
+        closeBtn.style.cssText = 'background:none;border:none;cursor:pointer;color:var(--text-subtle);font-size:14px;';
+        closeBtn.addEventListener('click', () => toast.remove());
+
+        toast.appendChild(iconEl);
+        toast.appendChild(bodyEl);
+        toast.appendChild(closeBtn);
 
         container.appendChild(toast);
         setTimeout(() => {
@@ -535,7 +568,6 @@ const Store = {
             user: {
                 name: name.trim(),
                 email: normalizedEmail,
-                password: password || 'password123',
                 role: role || 'owner',
                 umkm: umkm.trim()
             },
@@ -552,7 +584,11 @@ const Store = {
         store.currentSessionEmail = normalizedEmail;
         this.saveStore(store);
 
-        await this.postToApi('save_user', newAccount.user);
+        // Kirim ke endpoint register (password di-hash dengan password_hash() di server)
+        await this.postToApi('register', {
+            ...newAccount.user,
+            password: password || 'password123'
+        });
         return newAccount;
     },
 
@@ -560,15 +596,34 @@ const Store = {
         const normalizedEmail = (emailInput || '').trim().toLowerCase();
         const store = this.getStore();
 
+        // Verifikasi dengan backend PHP jika tersedia
+        const apiRes = await this.postToApi('login', {
+            email: normalizedEmail,
+            password: passwordInput || ''
+        });
+
         let account = store.accounts[normalizedEmail];
-        if (!account) {
-            // Jika user memasukkan email baru yang belum terdaftar di localStorage, buat profil sesi lokal bersih
-            // atau cocokkan dengan akun demo jika email adalah owner@tokosehat.id
+        if (apiRes && apiRes.success && apiRes.user) {
+            if (!account) {
+                account = {
+                    user: apiRes.user,
+                    assessmentSubmissions: [],
+                    umkmList: [
+                        { id: 1, name: apiRes.user.umkm || 'UMKM Utama', sektor: 'Umum', karyawanCount: 1, skor: 0 }
+                    ],
+                    employees: []
+                };
+            } else {
+                account.user = { ...account.user, ...apiRes.user };
+                delete account.user.password;
+            }
+            store.accounts[normalizedEmail] = account;
+        } else if (!account) {
+            // Fallback mode demo offline (tanpa menyimpan plaintext password di localStorage)
             account = {
                 user: {
                     name: normalizedEmail.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Pengguna',
                     email: normalizedEmail,
-                    password: passwordInput || 'password123',
                     role: 'owner',
                     umkm: 'UMKM ' + (normalizedEmail.split('@')[0] || 'Mandiri').toUpperCase()
                 },
@@ -583,8 +638,6 @@ const Store = {
 
         store.currentSessionEmail = normalizedEmail;
         this.saveStore(store);
-
-        await this.postToApi('save_user', account.user);
         return account;
     },
 
@@ -750,13 +803,19 @@ const Store = {
     // ================= BACKEND PHP / MYSQL SYNC =================
     async postToApi(action, payload) {
         try {
+            const activeEmail = this.getActiveEmail() || payload?.email || '';
+            const enrichedPayload = {
+                ...(payload || {}),
+                ownerEmail: payload?.ownerEmail || activeEmail
+            };
             const res = await fetch(`${API_URL}?action=${encodeURIComponent(action)}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload || {})
+                body: JSON.stringify(enrichedPayload)
             });
-            if (!res.ok) return null;
-            return await res.json();
+            const data = await res.json().catch(() => null);
+            if (!res.ok) return data;
+            return data;
         } catch (err) {
             return null;
         }
@@ -790,38 +849,75 @@ const Store = {
         return this.getActiveAccount();
     },
 
-    // ================= OUTBOUND WEBHOOK N8N =================
-    getWebhookUrl() {
-        return this.getStore().webhookUrl || DEFAULT_N8N_WEBHOOK_URL;
+    // ================= OUTBOUND WEBHOOK N8N (VIA PHP PROXY + HMAC) =================
+    async computeHmacSha256(secret, message) {
+        if (!window.crypto || !window.crypto.subtle) {
+            throw new Error('Web Crypto API tidak tersedia (pastikan menggunakan HTTPS atau localhost).');
+        }
+        const enc = new TextEncoder();
+        const key = await window.crypto.subtle.importKey(
+            'raw',
+            enc.encode(secret),
+            { name: 'HMAC', hash: 'SHA-256' },
+            false,
+            ['sign']
+        );
+        const signature = await window.crypto.subtle.sign('HMAC', key, enc.encode(message));
+        return Array.from(new Uint8Array(signature))
+            .map(b => b.toString(16).padStart(2, '0'))
+            .join('');
     },
 
-    setWebhookUrl(url) {
+    getWebhookCooldownRemainingMs(email) {
         const store = this.getStore();
-        store.webhookUrl = (url || '').trim();
+        const lastMap = store.lastWebhookSentAt || {};
+        const lastTs = Number(lastMap[email] || 0);
+        if (!lastTs) return 0;
+        const elapsed = Date.now() - lastTs;
+        return elapsed < WEBHOOK_COOLDOWN_MS ? (WEBHOOK_COOLDOWN_MS - elapsed) : 0;
+    },
+
+    recordWebhookSent(email) {
+        const store = this.getStore();
+        if (!store.lastWebhookSentAt) store.lastWebhookSentAt = {};
+        store.lastWebhookSentAt[email] = Date.now();
         this.saveStore(store);
     },
 
     /**
-     * Mengirim payload JSON lengkap dari browser (Outbound Webhook) ke endpoint n8n.
-     * Menghindari blokir anti-bot cookie challenge InfinityFree pada inbound request.
+     * Mengirim payload JSON ke webhook-proxy.php (server-side relay ke n8n).
+     * URL asli Webhook n8n tidak pernah terekspos di browser.
      */
     async sendN8nWebhook(eventType = 'assessment_submitted', latestSubmission = null) {
-        const webhookUrl = this.getWebhookUrl();
         const account = this.getActiveAccount();
         if (!account) return { sent: false, reason: 'no_session' };
 
-        if (!webhookUrl || !/^https?:\/\/.+/i.test(webhookUrl)) {
+        const email = (account.user.email || '').trim();
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            UI.showToast('Email Tidak Valid', 'Format email pemilik akun tidak valid untuk pengiriman laporan.', 'error');
+            return { sent: false, reason: 'invalid_email' };
+        }
+
+        // Client-side rate limit check (anti-spam saat refresh / double-click)
+        const remainingMs = this.getWebhookCooldownRemainingMs(email);
+        if (remainingMs > 0) {
+            const waitSec = Math.ceil(remainingMs / 1000);
             UI.showToast(
-                'Webhook n8n Belum Dikonfigurasi',
-                'Data tersimpan lokal/DB. Atur URL Webhook n8n di pengaturan untuk mengirim notifikasi otomatis.',
+                'Batas Pengiriman Aktif',
+                `Tunggu ${waitSec} detik sebelum memicu notifikasi Webhook n8n kembali.`,
                 'warning'
             );
-            return { sent: false, reason: 'missing_url' };
+            return { sent: false, reason: 'rate_limited_client', waitSec };
         }
 
         const analysis = this.getFactorAnalysis();
-        const stats = this.getParticipationStats();
+        if (typeof analysis.overall !== 'number' || analysis.overall < 0 || analysis.overall > 100) {
+            UI.showToast('Payload Tidak Valid', 'Skor keseluruhan berada di luar rentang 0-100.', 'error');
+            return { sent: false, reason: 'invalid_score' };
+        }
 
+        const stats = this.getParticipationStats();
         const payload = {
             platform: 'Xie Xe Hat',
             event: eventType,
@@ -835,7 +931,7 @@ const Store = {
             },
             owner: {
                 name: account.user.name,
-                email: account.user.email,
+                email: email,
                 role: account.user.role
             },
             assessment_summary: {
@@ -856,37 +952,45 @@ const Store = {
         };
 
         const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 8000);
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
 
         try {
-            const response = await fetch(webhookUrl, {
+            const ts = Math.floor(Date.now() / 1000).toString();
+            const rawBody = JSON.stringify(payload);
+            const sig = await this.computeHmacSha256(CLIENT_HMAC_SECRET, `${ts}.${rawBody}`);
+
+            const response = await fetch(WEBHOOK_PROXY_URL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-XXH-Timestamp': ts,
+                    'X-XXH-Signature': sig
                 },
-                body: JSON.stringify(payload),
+                body: rawBody,
                 signal: controller.signal
             });
 
             clearTimeout(timeoutId);
+            const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(`HTTP ${response.status} ${response.statusText}`);
+                throw new Error(resData.message || resData.error || `HTTP ${response.status}`);
             }
 
+            this.recordWebhookSent(email);
             UI.showToast(
-                'Terkirim ke Webhook n8n',
-                `Payload (${analysis.overall}%) untuk ${account.user.umkm} berhasil dikirim.`,
+                'Terkirim Aman ke n8n',
+                `Payload (${analysis.overall}%) untuk ${account.user.umkm} berhasil diteruskan via proxy.`,
                 'success'
             );
             return { sent: true, status: response.status, payload };
         } catch (error) {
             clearTimeout(timeoutId);
             const errMsg = error.name === 'AbortError'
-                ? 'Koneksi ke endpoint n8n timeout (>8 detik).'
-                : `Gagal menghubungi n8n (${error.message}). Pastikan CORS di n8n aktif.`;
+                ? 'Koneksi ke proxy webhook timeout (>10 detik).'
+                : `Gagal mengirim via proxy (${error.message}).`;
 
-            UI.showToast('Gagal Mengirim Webhook n8n', errMsg, 'error');
+            UI.showToast('Gagal Mengirim Webhook', errMsg, 'error');
             return { sent: false, reason: 'network_error', error: error.message };
         }
     }

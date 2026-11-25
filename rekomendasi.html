@@ -217,26 +217,26 @@
         </main>
     </div>
 
-    <!-- MODAL PENGATURAN WEBHOOK N8N -->
+    <!-- MODAL STATUS KEAMANAN WEBHOOK N8N -->
     <div id="webhookModal" class="modal-overlay">
         <div class="modal-content">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                <h3 style="font-size: 17px; font-weight: 800; color: var(--text-heading);">Konfigurasi Outbound Webhook n8n</h3>
+                <h3 style="font-size: 17px; font-weight: 800; color: var(--text-heading);">Keamanan Relay Webhook n8n</h3>
                 <button onclick="closeWebhookModal()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted);">✕</button>
             </div>
-            <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
-                Masukkan URL Webhook n8n Anda. Setiap asesmen baru atau pemicu laporan akan mengirimkan payload JSON lengkap secara langsung dari browser ke n8n.
+            <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 14px; line-height: 1.55;">
+                Untuk mencegah kebocoran URL Webhook n8n di browser dan melindungi endpoint dari spam, seluruh payload sekarang dikirim melalui proxy server-side (<code>webhook-proxy.php</code>).
             </p>
-            <form onsubmit="saveWebhookSettings(event)">
-                <div class="form-group">
-                    <label for="modalWebhookUrl">URL Endpoint Webhook n8n</label>
-                    <input type="url" id="modalWebhookUrl" class="form-control" placeholder="https://n8n.domainanda.com/webhook/xiexehat">
-                </div>
-                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
-                    <button type="button" onclick="closeWebhookModal()" class="btn btn-outline">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan URL Webhook</button>
-                </div>
-            </form>
+            <div style="background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 14px; font-size: 12.5px; color: var(--text-body); line-height: 1.6;">
+                <div>✅ <strong>URL n8n Tersembunyi:</strong> Disimpan aman sebagai konstanta PHP di server.</div>
+                <div>✅ <strong>HMAC-SHA256 Signature:</strong> Header <code>X-XXH-Signature</code> + <code>X-XXH-Timestamp</code> (anti-replay 5 menit).</div>
+                <div>✅ <strong>Rate Limiting:</strong> Cooldown 60 detik di client + maks 5 req/menit per akun di MySQL.</div>
+                <div>✅ <strong>CORS Ketat:</strong> Hanya mengizinkan origin <code>https://xiexehat.page.gd</code>.</div>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                <button type="button" onclick="closeWebhookModal()" class="btn btn-outline">Tutup</button>
+                <button type="button" onclick="closeWebhookModal(); triggerReportWebhook();" class="btn btn-primary">Kirim Tes Laporan Sekarang</button>
+            </div>
         </div>
     </div>
 
@@ -263,7 +263,7 @@
                     `Belum ada data kuesioner yang masuk. Silakan isi <a href="asesmen.html" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Asesmen Organisasi</a> terlebih dahulu agar sistem dapat memetakan prioritas perbaikan.`;
             } else {
                 document.getElementById('recCategoryDesc').innerHTML =
-                    `Organisasi berada dalam kategori <strong>${cat.label}</strong>. Prioritaskan perbaikan pada dimensi <strong>${analysis.lowest.label} (${analysis.lowest.score}%)</strong> sambil mempertahankan keunggulan pada <strong>${analysis.highest.label} (${analysis.highest.score}%)</strong>.`;
+                    `Organisasi berada dalam kategori <strong>${UI.escapeHTML(cat.label)}</strong>. Prioritaskan perbaikan pada dimensi <strong>${UI.escapeHTML(analysis.lowest.label)} (${Number(analysis.lowest.score)}%)</strong> sambil mempertahankan keunggulan pada <strong>${UI.escapeHTML(analysis.highest.label)} (${Number(analysis.highest.score)}%)</strong>.`;
             }
 
             // Render Lowest Factor (Prioritas 1)
@@ -335,20 +335,11 @@
         }
 
         function openWebhookModal() {
-            document.getElementById('modalWebhookUrl').value = Store.getWebhookUrl();
             document.getElementById('webhookModal').classList.add('active');
         }
 
         function closeWebhookModal() {
             document.getElementById('webhookModal').classList.remove('active');
-        }
-
-        function saveWebhookSettings(e) {
-            e.preventDefault();
-            const url = document.getElementById('modalWebhookUrl').value.trim();
-            Store.setWebhookUrl(url);
-            closeWebhookModal();
-            UI.showToast('Konfigurasi Disimpan', url ? 'URL Webhook n8n berhasil diperbarui.' : 'URL Webhook n8n dikosongkan.', 'success');
         }
 
         async function triggerReportWebhook() {

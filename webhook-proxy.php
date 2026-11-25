@@ -29,12 +29,19 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 
 // --- VALIDASI CORS / ORIGIN ---
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if ($origin !== ALLOWED_ORIGIN) {
+$originHost = $origin ? (parse_url($origin, PHP_URL_HOST) ?? '') : '';
+$allowedHosts = ['xiexehat.page.gd', 'localhost', '127.0.0.1'];
+
+if ($origin !== '' && !in_array($originHost, $allowedHosts, true)) {
     http_response_code(403);
     echo json_encode(['error' => 'forbidden_origin']);
     exit;
 }
-header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN);
+if ($origin !== '') {
+    header('Access-Control-Allow-Origin: ' . $origin);
+} else {
+    header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN);
+}
 header('Access-Control-Allow-Methods: POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, X-XXH-Signature, X-XXH-Timestamp');
 

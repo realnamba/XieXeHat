@@ -303,13 +303,30 @@
                     const avg = vals.length > 0 ? Math.round(vals.reduce((a, b) => a + b, 0) / vals.length) : 0;
                     const subCat = Store.getHealthCategory(avg);
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `
-                        <td><strong style="color: var(--text-heading);">${sub.respondentName}</strong></td>
-                        <td>${sub.respondentRole}</td>
-                        <td>${sub.umkmName}</td>
-                        <td style="color: var(--text-muted); font-size: 12px;">${UI.formatDateID(sub.submittedAt)}</td>
-                        <td><span class="badge ${subCat.class}">${avg}%</span></td>
-                    `;
+
+                    const tdName = document.createElement('td');
+                    const strongName = document.createElement('strong');
+                    strongName.style.color = 'var(--text-heading)';
+                    strongName.textContent = sub.respondentName || '-';
+                    tdName.appendChild(strongName);
+
+                    const tdRole = document.createElement('td');
+                    tdRole.textContent = sub.respondentRole || '-';
+
+                    const tdUmkm = document.createElement('td');
+                    tdUmkm.textContent = sub.umkmName || '-';
+
+                    const tdDate = document.createElement('td');
+                    tdDate.style.cssText = 'color: var(--text-muted); font-size: 12px;';
+                    tdDate.textContent = UI.formatDateID(sub.submittedAt);
+
+                    const tdScore = document.createElement('td');
+                    const badge = document.createElement('span');
+                    badge.className = `badge ${subCat.class}`;
+                    badge.textContent = `${avg}%`;
+                    tdScore.appendChild(badge);
+
+                    tr.append(tdName, tdRole, tdUmkm, tdDate, tdScore);
                     tbody.appendChild(tr);
                 });
             }

@@ -15,18 +15,14 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 header('Content-Type: application/json; charset=utf-8');
 
 // --- CORS KETAT: Hanya izinkan domain resmi ---
-$allowedOrigins = [
-    'https://xiexehat.page.gd',
-    'http://localhost',       // untuk pengembangan lokal
-    'http://127.0.0.1',
-];
 $origin = $_SERVER['HTTP_ORIGIN'] ?? '';
-if (in_array($origin, $allowedOrigins, true)) {
-    header('Access-Control-Allow-Origin: ' . $origin);
-} else {
-    // Jika tidak ada origin header (direct server call), tolak jika ada body data
-    // tapi izinkan GET ping tanpa origin untuk health check
-    if (!empty($origin)) {
+$originHost = $origin ? (parse_url($origin, PHP_URL_HOST) ?? '') : '';
+$allowedHosts = ['xiexehat.page.gd', 'localhost', '127.0.0.1'];
+
+if ($origin !== '') {
+    if (in_array($originHost, $allowedHosts, true)) {
+        header('Access-Control-Allow-Origin: ' . $origin);
+    } else {
         http_response_code(403);
         echo json_encode(['error' => 'forbidden_origin']);
         exit;
@@ -102,6 +98,21 @@ function initDatabaseTables(PDO $pdo): void {
         hit_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         INDEX idx_email_time (email, hit_at)
     ) ENGINE=InnoDB");
+
+    // Auto-upgrade kolom jika tabel versi lama sudah ada di InfinityFree
+    $migrations = [
+        ['users', 'password_hash', "VARCHAR(255) DEFAULT ''"],
+        ['scores', 'owner_email', "VARCHAR(100) NOT NULL DEFAULT ''"],
+        ['umkm', 'owner_email', "VARCHAR(100) NOT NULL DEFAULT ''"],
+        ['employees', 'owner_email', "VARCHAR(100) NOT NULL DEFAULT ''"],
+    ];
+    foreach ($migrations as [$table, $col, $def]) {
+        $colCheck = $pdo->prepare("SHOW COLUMNS FROM `$table` LIKE ?");
+        $colCheck->execute([$col]);
+        if (!$colCheck->fetch()) {
+            $pdo->exec("ALTER TABLE `$table` ADD COLUMN `$col` $def");
+        }
+    }
 }
 
 try {

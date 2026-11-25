@@ -152,18 +152,42 @@
             list.forEach(item => {
                 const tr = document.createElement('tr');
                 const cat = item.skor > 0 ? Store.getHealthCategory(item.skor) : { label: 'Belum Diukur', class: 'badge-primary' };
-                tr.innerHTML = `
-                    <td style="font-weight: 700; color: var(--text-muted);">#00${item.id}</td>
-                    <td><strong style="color: var(--text-heading);">${item.name}</strong></td>
-                    <td><span class="badge badge-primary">${item.sektor}</span></td>
-                    <td>${item.karyawanCount} Karyawan</td>
-                    <td><span class="badge ${cat.class}">${item.skor}% ${cat.label}</span></td>
-                    <td>
-                        <button onclick="deleteUmkm(${item.id})" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FECACA; padding: 4px 10px;">
-                            Hapus
-                        </button>
-                    </td>
-                `;
+
+                const tdId = document.createElement('td');
+                tdId.style.cssText = 'font-weight: 700; color: var(--text-muted);';
+                tdId.textContent = `#00${Number(item.id) || 0}`;
+
+                const tdName = document.createElement('td');
+                const strongName = document.createElement('strong');
+                strongName.style.color = 'var(--text-heading)';
+                strongName.textContent = item.name || '-';
+                tdName.appendChild(strongName);
+
+                const tdSektor = document.createElement('td');
+                const sektorBadge = document.createElement('span');
+                sektorBadge.className = 'badge badge-primary';
+                sektorBadge.textContent = item.sektor || '-';
+                tdSektor.appendChild(sektorBadge);
+
+                const tdCount = document.createElement('td');
+                tdCount.textContent = `${Number(item.karyawanCount) || 0} Karyawan`;
+
+                const tdSkor = document.createElement('td');
+                const skorBadge = document.createElement('span');
+                skorBadge.className = `badge ${cat.class}`;
+                skorBadge.textContent = `${Number(item.skor) || 0}% ${cat.label}`;
+                tdSkor.appendChild(skorBadge);
+
+                const tdAction = document.createElement('td');
+                const delBtn = document.createElement('button');
+                delBtn.type = 'button';
+                delBtn.className = 'btn btn-outline btn-sm';
+                delBtn.style.cssText = 'color: var(--danger); border-color: #FECACA; padding: 4px 10px;';
+                delBtn.textContent = 'Hapus';
+                delBtn.addEventListener('click', () => deleteUmkm(item.id));
+                tdAction.appendChild(delBtn);
+
+                tr.append(tdId, tdName, tdSektor, tdCount, tdSkor, tdAction);
                 tbody.appendChild(tr);
             });
         }
