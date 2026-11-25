@@ -72,13 +72,13 @@
             </ul>
 
             <div class="sidebar-profile">
-                <div class="user-avatar">BS</div>
+                <div class="user-avatar">XX</div>
                 <div style="flex-grow: 1; overflow: hidden;">
                     <div id="userName" style="font-size: 13px; font-weight: 700; color: var(--text-heading); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
-                        Budi Santoso
+                        Memuat...
                     </div>
                     <div id="userRole" style="font-size: 11px; color: var(--text-muted);">
-                        Pemilik UMKM
+                        Akun
                     </div>
                 </div>
                 <button onclick="handleLogout()" style="background: none; border: none; cursor: pointer; color: var(--danger); font-size: 14px;" title="Keluar">
@@ -95,11 +95,17 @@
                     <h1 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 4px;">
                         Rekomendasi Peningkatan Kesehatan Organisasi
                     </h1>
-                    <p style="font-size: 13.5px; color: var(--text-muted);">
-                        Langkah intervensi manajerial yang disesuaikan dengan kondisi aktual hasil asesmen UMKM Anda.
+                    <p id="recHeaderSub" style="font-size: 13.5px; color: var(--text-muted);">
+                        Langkah intervensi manajerial otomatis berdasarkan hasil akumulasi kuesioner UMKM Anda.
                     </p>
                 </div>
-                <div class="no-print">
+                <div class="no-print" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="openWebhookModal()" class="btn btn-outline btn-sm">
+                        ⚙️ Atur Webhook n8n
+                    </button>
+                    <button onclick="triggerReportWebhook()" class="btn btn-outline btn-sm" style="border-color: var(--primary); color: var(--primary);">
+                        🚀 Kirim Laporan ke n8n
+                    </button>
                     <button onclick="window.print()" class="btn btn-primary btn-sm">
                         🖨️ Cetak / Unduh Laporan PDF
                     </button>
@@ -114,86 +120,80 @@
                             Diagnosis Klinis Organisasi
                         </div>
                         <h2 style="font-size: 20px; font-weight: 800; color: var(--text-heading); margin-bottom: 6px;">
-                            Indeks Vitalitas Organisasi: <span id="recOverallScore" style="color: var(--primary);">86%</span>
+                            Indeks Vitalitas Organisasi: <span id="recOverallScore" style="color: var(--primary);">0%</span>
                         </h2>
-                        <p style="font-size: 13px; color: var(--text-body); max-width: 600px; line-height: 1.55;">
-                            Organisasi berada dalam kategori <strong>Stabil & Sangat Sehat</strong>. Untuk mempertahankan stabilitas performa, fokuskan energi pada peningkatan keharmonisan komunikasi interpersonal antar staf.
+                        <p id="recCategoryDesc" style="font-size: 13px; color: var(--text-body); max-width: 620px; line-height: 1.55;">
+                            Memuat analisis diagnosis...
                         </p>
                     </div>
 
                     <div style="text-align: right;">
-                        <span class="badge badge-sage" style="font-size: 13px; padding: 6px 16px;">
-                            Tingkat Risiko: Rendah
+                        <span id="recRiskBadge" class="badge badge-primary" style="font-size: 13px; padding: 6px 16px;">
+                            Tingkat Risiko: -
                         </span>
                     </div>
                 </div>
             </div>
 
-            <!-- Priority Grid -->
+            <!-- Dynamic Priority Grid -->
             <div class="grid-2" style="gap: 24px; margin-bottom: 30px;">
                 
-                <!-- Area Prioritas Perbaikan (Bottom Factor) -->
-                <div class="card" style="border-left: 4px solid var(--warning);">
+                <!-- Area Prioritas Perbaikan (Faktor Terendah Dinamis) -->
+                <div id="lowestCard" class="card" style="border-left: 4px solid var(--warning);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                         <h3 style="font-size: 15px; font-weight: 800; color: var(--text-heading);">
                             ⚠️ Prioritas 1: Area Perbaikan
                         </h3>
-                        <span class="badge" style="background: var(--warning-subtle); color: #B45309; border-color: #FDE68A;">
-                            Skor Terendah: 78%
+                        <span id="lowestBadge" class="badge" style="background: var(--warning-subtle); color: #B45309; border-color: #FDE68A;">
+                            Skor Terendah: 0%
                         </span>
                     </div>
 
-                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px;">
-                        Hubungan Interpersonal (Relationships)
+                    <h4 id="lowestTitle" style="font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px;">
+                        -
                     </h4>
-                    <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-                        Terindikasi adanya gesekan komunikasi ringan atau rasa segan antar tim yang dapat memicu salah paham operasional.
+                    <p id="lowestDesc" style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+                        -
                     </p>
 
                     <div style="background: var(--bg-base); padding: 14px; border-radius: var(--radius-sm); font-size: 12.5px;">
                         <strong style="color: var(--text-heading); display: block; margin-bottom: 6px;">Aksi Rekomendasi Disarankan:</strong>
-                        <ul style="padding-left: 18px; color: var(--text-body); display: flex; flex-direction: column; gap: 6px;">
-                            <li>Agendakan sesi informal mingguan (coffee morning) untuk mencairkan komunikasi.</li>
-                            <li>Terapkan aturan kesepakatan etika komunikasi kerja yang saling menghormati.</li>
-                            <li>Buka kanal pelaporan keluhan tertutup langsung kepada pimpinan pemilik UMKM.</li>
+                        <ul id="lowestActions" style="padding-left: 18px; color: var(--text-body); display: flex; flex-direction: column; gap: 6px;">
                         </ul>
                     </div>
                 </div>
 
-                <!-- Faktor Unggulan (Top Factor) -->
+                <!-- Faktor Unggulan (Faktor Tertinggi Dinamis) -->
                 <div class="card" style="border-left: 4px solid var(--accent-sage);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
                         <h3 style="font-size: 15px; font-weight: 800; color: var(--text-heading);">
                             🌟 Faktor Unggulan Utama
                         </h3>
-                        <span class="badge badge-sage">
-                            Skor Tertinggi: 92%
+                        <span id="highestBadge" class="badge badge-sage">
+                            Skor Tertinggi: 0%
                         </span>
                     </div>
 
-                    <h4 style="font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px;">
-                        Kejelasan Peran (Role Clarity)
+                    <h4 id="highestTitle" style="font-size: 14px; font-weight: 700; color: var(--text-heading); margin-bottom: 4px;">
+                        -
                     </h4>
-                    <p style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-                        Setiap anggota tim memahami dengan sangat baik tugas harian dan batasan tanggung jawab mereka dalam bisnis.
+                    <p id="highestDesc" style="font-size: 12.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
+                        -
                     </p>
 
                     <div style="background: var(--bg-base); padding: 14px; border-radius: var(--radius-sm); font-size: 12.5px;">
                         <strong style="color: var(--text-heading); display: block; margin-bottom: 6px;">Langkah Mempertahankan:</strong>
-                        <ul style="padding-left: 18px; color: var(--text-body); display: flex; flex-direction: column; gap: 6px;">
-                            <li>Dokumentasikan Standard Operating Procedure (SOP) tertulis agar konsisten.</li>
-                            <li>Jadikan kejelasan peran saat ini sebagai acuan pelatihan karyawan baru.</li>
-                            <li>Berikan apresiasi terbuka atas kepatuhan tim terhadap target kerja.</li>
+                        <ul id="highestActions" style="padding-left: 18px; color: var(--text-body); display: flex; flex-direction: column; gap: 6px;">
                         </ul>
                     </div>
                 </div>
 
             </div>
 
-            <!-- Action Roadmap Table -->
+            <!-- Dynamic 30-Day Action Roadmap Table -->
             <div class="card">
                 <h3 style="font-size: 16px; font-weight: 800; color: var(--text-heading); margin-bottom: 14px;">
-                    Rencana Jadwal Intervensi Manajemen 30 Hari
+                    Rencana Jadwal Intervensi Manajemen 30 Hari (Berbasis Prioritas Skor)
                 </h3>
                 <div class="table-wrapper">
                     <table>
@@ -201,40 +201,14 @@
                             <tr>
                                 <th>Periode</th>
                                 <th>Target Faktor</th>
+                                <th>Skor Saat Ini</th>
                                 <th>Inisiatif Strategis</th>
                                 <th>Penanggung Jawab</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            <tr>
-                                <td>Minggu 1</td>
-                                <td>Hubungan Interpersonal</td>
-                                <td>Sesi Sharing Tim & Evaluasi Beban Kerja</td>
-                                <td>Pemilik Usaha</td>
-                                <td><span class="badge badge-sage">Siap Dilaksanakan</span></td>
-                            </tr>
-                            <tr>
-                                <td>Minggu 2</td>
-                                <td>Tuntutan Tugas</td>
-                                <td>Penyesuaian Jadwal Shift & Istirahat</td>
-                                <td>Supervisor Toko</td>
-                                <td><span class="badge badge-cyan">Dalam Proses</span></td>
-                            </tr>
-                            <tr>
-                                <td>Minggu 3</td>
-                                <td>Dukungan Atasan</td>
-                                <td>Penyusunan Jadwal One-on-One Bulanan</td>
-                                <td>Pemilik Usaha</td>
-                                <td><span class="badge">Terjadwal</span></td>
-                            </tr>
-                            <tr>
-                                <td>Minggu 4</td>
-                                <td>6 Faktor</td>
-                                <td>Asesmen Ulang Evaluasi Dampak Perubahan</td>
-                                <td>Seluruh Karyawan</td>
-                                <td><span class="badge">Evaluasi Akhir</span></td>
-                            </tr>
+                        <tbody id="roadmapTableBody">
+                            <!-- Rendered dynamically by JS -->
                         </tbody>
                     </table>
                 </div>
@@ -243,16 +217,149 @@
         </main>
     </div>
 
+    <!-- MODAL PENGATURAN WEBHOOK N8N -->
+    <div id="webhookModal" class="modal-overlay">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                <h3 style="font-size: 17px; font-weight: 800; color: var(--text-heading);">Konfigurasi Outbound Webhook n8n</h3>
+                <button onclick="closeWebhookModal()" style="background: none; border: none; font-size: 18px; cursor: pointer; color: var(--text-muted);">✕</button>
+            </div>
+            <p style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.5;">
+                Masukkan URL Webhook n8n Anda. Setiap asesmen baru atau pemicu laporan akan mengirimkan payload JSON lengkap secara langsung dari browser ke n8n.
+            </p>
+            <form onsubmit="saveWebhookSettings(event)">
+                <div class="form-group">
+                    <label for="modalWebhookUrl">URL Endpoint Webhook n8n</label>
+                    <input type="url" id="modalWebhookUrl" class="form-control" placeholder="https://n8n.domainanda.com/webhook/xiexehat">
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px;">
+                    <button type="button" onclick="closeWebhookModal()" class="btn btn-outline">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan URL Webhook</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="js/app.js"></script>
     <script>
+        function renderRecommendations() {
+            const account = Store.getActiveAccount();
+            if (!account) return;
+
+            UI.syncSidebarProfile();
+            const analysis = Store.getFactorAnalysis();
+            const stats = Store.getParticipationStats();
+            const cat = analysis.category;
+
+            document.getElementById('recHeaderSub').textContent =
+                `Rekomendasi otomatis untuk ${account.user.umkm || 'UMKM Anda'} berdasarkan akumulasi ${stats.totalSubmissions} responden.`;
+
+            document.getElementById('recOverallScore').textContent = analysis.overall + '%';
+            document.getElementById('recRiskBadge').textContent = 'Tingkat Risiko: ' + cat.riskLabel;
+            document.getElementById('recRiskBadge').className = 'badge ' + cat.class;
+
+            if (stats.totalSubmissions === 0) {
+                document.getElementById('recCategoryDesc').innerHTML =
+                    `Belum ada data kuesioner yang masuk. Silakan isi <a href="asesmen.html" style="color: var(--primary); font-weight: 700; text-decoration: underline;">Asesmen Organisasi</a> terlebih dahulu agar sistem dapat memetakan prioritas perbaikan.`;
+            } else {
+                document.getElementById('recCategoryDesc').innerHTML =
+                    `Organisasi berada dalam kategori <strong>${cat.label}</strong>. Prioritaskan perbaikan pada dimensi <strong>${analysis.lowest.label} (${analysis.lowest.score}%)</strong> sambil mempertahankan keunggulan pada <strong>${analysis.highest.label} (${analysis.highest.score}%)</strong>.`;
+            }
+
+            // Render Lowest Factor (Prioritas 1)
+            const low = analysis.lowest;
+            document.getElementById('lowestBadge').textContent = `Skor Terendah: ${low.score}%`;
+            document.getElementById('lowestTitle').textContent = low.label;
+            document.getElementById('lowestDesc').textContent = stats.totalSubmissions > 0
+                ? low.improvementDesc
+                : 'Menunggu pengisian kuesioner pertama untuk mendeteksi area yang memerlukan intervensi.';
+
+            const lowList = document.getElementById('lowestActions');
+            lowList.innerHTML = '';
+            low.improvementActions.forEach(act => {
+                const li = document.createElement('li');
+                li.textContent = act;
+                lowList.appendChild(li);
+            });
+
+            // Render Highest Factor (Faktor Unggulan)
+            const high = analysis.highest;
+            document.getElementById('highestBadge').textContent = `Skor Tertinggi: ${high.score}%`;
+            document.getElementById('highestTitle').textContent = high.label;
+            document.getElementById('highestDesc').textContent = stats.totalSubmissions > 0
+                ? high.maintenanceDesc
+                : 'Menunggu pengisian kuesioner pertama untuk memetakan kekuatan utama organisasi Anda.';
+
+            const highList = document.getElementById('highestActions');
+            highList.innerHTML = '';
+            high.maintenanceActions.forEach(act => {
+                const li = document.createElement('li');
+                li.textContent = act;
+                highList.appendChild(li);
+            });
+
+            // Render Dynamic 30-Day Roadmap Table (Weeks 1-3 target lowest 3 factors, Week 4 evaluates all 6)
+            const tbody = document.getElementById('roadmapTableBody');
+            tbody.innerHTML = '';
+            const priorities = analysis.sortedAsc.slice(0, 3);
+            const weekConfigs = [
+                { period: 'Minggu 1', badgeText: 'Prioritas Utama', badgeCls: 'badge-danger' },
+                { period: 'Minggu 2', badgeText: 'Tindak Lanjut', badgeCls: 'badge-cyan' },
+                { period: 'Minggu 3', badgeText: 'Terjadwal', badgeCls: 'badge-primary' }
+            ];
+
+            priorities.forEach((factor, idx) => {
+                const cfg = weekConfigs[idx];
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><strong>${cfg.period}</strong></td>
+                    <td>${factor.shortLabel}</td>
+                    <td><strong>${factor.score}%</strong></td>
+                    <td>${factor.roadmapInitiative}</td>
+                    <td>${factor.roadmapOwner}</td>
+                    <td><span class="badge ${cfg.badgeCls}">${cfg.badgeText}</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            const week4Tr = document.createElement('tr');
+            week4Tr.innerHTML = `
+                <td><strong>Minggu 4</strong></td>
+                <td>Seluruh 6 Faktor</td>
+                <td><strong>${analysis.overall}%</strong></td>
+                <td>Asesmen Ulang & Evaluasi Dampak Perubahan</td>
+                <td>Seluruh Karyawan</td>
+                <td><span class="badge badge-sage">Evaluasi Akhir</span></td>
+            `;
+            tbody.appendChild(week4Tr);
+        }
+
+        function openWebhookModal() {
+            document.getElementById('modalWebhookUrl').value = Store.getWebhookUrl();
+            document.getElementById('webhookModal').classList.add('active');
+        }
+
+        function closeWebhookModal() {
+            document.getElementById('webhookModal').classList.remove('active');
+        }
+
+        function saveWebhookSettings(e) {
+            e.preventDefault();
+            const url = document.getElementById('modalWebhookUrl').value.trim();
+            Store.setWebhookUrl(url);
+            closeWebhookModal();
+            UI.showToast('Konfigurasi Disimpan', url ? 'URL Webhook n8n berhasil diperbarui.' : 'URL Webhook n8n dikosongkan.', 'success');
+        }
+
+        async function triggerReportWebhook() {
+            await Store.sendN8nWebhook('report_triggered');
+        }
+
         document.addEventListener('DOMContentLoaded', async () => {
-            const overall = Store.getOverallScore();
-            document.getElementById('recOverallScore').textContent = overall + '%';
+            renderRecommendations();
             await Store.syncWithBackend();
-            const newOverall = Store.getOverallScore();
-            document.getElementById('recOverallScore').textContent = newOverall + '%';
+            renderRecommendations();
         });
     </script>
 </body>
 </html>
-

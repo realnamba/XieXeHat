@@ -58,13 +58,13 @@
             </ul>
 
             <div class="sidebar-profile">
-                <div class="user-avatar">BS</div>
+                <div class="user-avatar">XX</div>
                 <div style="flex-grow: 1; overflow: hidden;">
                     <div id="userName" style="font-size: 13px; font-weight: 700; color: var(--text-heading); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
-                        Budi Santoso
+                        Memuat...
                     </div>
                     <div id="userRole" style="font-size: 11px; color: var(--text-muted);">
-                        Pemilik UMKM
+                        Akun
                     </div>
                 </div>
                 <button onclick="handleLogout()" style="background: none; border: none; cursor: pointer; color: var(--danger); font-size: 14px;" title="Keluar">
@@ -151,12 +151,13 @@
 
             list.forEach(item => {
                 const tr = document.createElement('tr');
+                const cat = item.skor > 0 ? Store.getHealthCategory(item.skor) : { label: 'Belum Diukur', class: 'badge-primary' };
                 tr.innerHTML = `
                     <td style="font-weight: 700; color: var(--text-muted);">#00${item.id}</td>
                     <td><strong style="color: var(--text-heading);">${item.name}</strong></td>
                     <td><span class="badge badge-primary">${item.sektor}</span></td>
                     <td>${item.karyawanCount} Karyawan</td>
-                    <td><span class="badge badge-sage">${item.skor}% Sehat</span></td>
+                    <td><span class="badge ${cat.class}">${item.skor}% ${cat.label}</span></td>
                     <td>
                         <button onclick="deleteUmkm(${item.id})" class="btn btn-outline btn-sm" style="color: var(--danger); border-color: #FECACA; padding: 4px 10px;">
                             Hapus

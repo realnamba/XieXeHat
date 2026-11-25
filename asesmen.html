@@ -42,6 +42,11 @@
             padding: 22px;
             margin-bottom: 20px;
         }
+        @media (max-width: 600px) {
+            .likert-group {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body>
@@ -96,13 +101,13 @@
             </ul>
 
             <div class="sidebar-profile">
-                <div class="user-avatar">BS</div>
+                <div class="user-avatar">XX</div>
                 <div style="flex-grow: 1; overflow: hidden;">
                     <div id="userName" style="font-size: 13px; font-weight: 700; color: var(--text-heading); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
-                        Budi Santoso
+                        Memuat...
                     </div>
                     <div id="userRole" style="font-size: 11px; color: var(--text-muted);">
-                        Pemilik UMKM
+                        Akun
                     </div>
                 </div>
                 <button onclick="handleLogout()" style="background: none; border: none; cursor: pointer; color: var(--danger); font-size: 14px;" title="Keluar">
@@ -114,16 +119,40 @@
         <!-- MAIN CONTENT AREA -->
         <main class="app-main">
             
-            <div style="max-width: 800px; margin: 0 auto;">
+            <div style="max-width: 820px; margin: 0 auto;">
                 
-                <div style="margin-bottom: 28px;">
-                    <div class="badge badge-primary" style="margin-bottom: 10px;">Kuesioner Terstandar</div>
+                <div style="margin-bottom: 24px;">
+                    <div class="badge badge-primary" style="margin-bottom: 10px;">Kuesioner Terstandar HSE</div>
                     <h1 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 6px;">
                         Kuesioner Asesmen Kesehatan Organisasi
                     </h1>
                     <p style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5;">
-                        Pilihlah tingkat persetujuan yang paling mencerminkan kondisi aktual di tempat kerja Anda. Jawaban Anda diproses secara objektif untuk menghitung indeks 6 faktor kesehatan organisasi.
+                        Setiap pengisian akan langsung diakumulasikan ke indeks kesehatan UMKM Anda dan dikirimkan ke Webhook n8n (jika aktif).
                     </p>
+                </div>
+
+                <!-- Identitas Responden & Pengaturan Webhook n8n -->
+                <div class="card" style="margin-bottom: 24px; padding: 20px;">
+                    <div class="grid-2" style="gap: 16px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="respondentName">Nama Responden / Karyawan</label>
+                            <input type="text" id="respondentName" class="form-control" placeholder="Contoh: Rian Pratama" required>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="respondentRole">Jabatan / Divisi</label>
+                            <input type="text" id="respondentRole" class="form-control" placeholder="Contoh: Barista, Kasir, Admin" required>
+                        </div>
+                    </div>
+                    <div class="grid-2" style="gap: 16px; margin-top: 14px;">
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="umkmSelect">Unit UMKM</label>
+                            <select id="umkmSelect" class="form-control"></select>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 0;">
+                            <label for="n8nWebhookInput">URL Outbound Webhook n8n (Opsional)</label>
+                            <input type="url" id="n8nWebhookInput" class="form-control" placeholder="https://n8n.domainanda.com/webhook/xiexehat">
+                        </div>
+                    </div>
                 </div>
 
                 <form id="assessmentForm" onsubmit="submitAssessment(event)">
@@ -328,8 +357,8 @@
 
                     <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 30px;">
                         <a href="dashboard.html" class="btn btn-outline">Batal</a>
-                        <button type="submit" class="btn btn-primary" style="padding: 12px 28px;">
-                            Hitung & Simpan Asesmen
+                        <button type="submit" id="submitBtn" class="btn btn-primary" style="padding: 12px 28px;">
+                            Hitung, Akumulasi & Simpan Asesmen
                         </button>
                     </div>
 
@@ -347,7 +376,7 @@
                 ✓
             </div>
             <h3 style="font-size: 18px; font-weight: 800; color: var(--text-heading); margin-bottom: 8px;">
-                Asesmen Berhasil Disimpan!
+                Asesmen Berhasil Diakumulasikan!
             </h3>
             <p id="modalDesc" style="font-size: 13.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 24px;">
                 Skor kesehatan organisasi Anda telah dikalkulasi ulang secara otomatis.
@@ -361,34 +390,66 @@
 
     <script src="js/app.js"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const account = Store.getActiveAccount();
+            if (!account) return;
+
+            document.getElementById('respondentName').value = account.user.name || '';
+            document.getElementById('respondentRole').value = account.user.role === 'owner' ? 'Pemilik / Manajemen' : 'Karyawan';
+            document.getElementById('n8nWebhookInput').value = Store.getWebhookUrl();
+
+            const umkmSelect = document.getElementById('umkmSelect');
+            umkmSelect.innerHTML = '';
+            const list = account.umkmList && account.umkmList.length > 0
+                ? account.umkmList
+                : [{ name: account.user.umkm || 'UMKM Utama' }];
+
+            list.forEach(u => {
+                const opt = document.createElement('option');
+                opt.value = u.name;
+                opt.textContent = u.name;
+                umkmSelect.appendChild(opt);
+            });
+        });
+
         async function submitAssessment(e) {
             e.preventDefault();
-            
-            // Read 6 values (1 to 5)
-            const v1 = parseInt(document.querySelector('input[name="q1"]:checked')?.value || 4);
-            const v2 = parseInt(document.querySelector('input[name="q2"]:checked')?.value || 4);
-            const v3 = parseInt(document.querySelector('input[name="q3"]:checked')?.value || 4);
-            const v4 = parseInt(document.querySelector('input[name="q4"]:checked')?.value || 4);
-            const v5 = parseInt(document.querySelector('input[name="q5"]:checked')?.value || 4);
-            const v6 = parseInt(document.querySelector('input[name="q6"]:checked')?.value || 4);
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Menyimpan & Mengakumulasi...';
 
-            // Convert to percentage (value / 5 * 100)
-            const newScores = {
-                demands: Math.round((v1 / 5) * 100),
-                control: Math.round((v2 / 5) * 100),
-                managerSupport: Math.round((v3 / 5) * 100),
-                peerSupport: Math.round((v4 / 5) * 100),
-                relationships: Math.round((v5 / 5) * 100),
-                roleClarity: Math.round((v6 / 5) * 100)
+            const webhookUrl = document.getElementById('n8nWebhookInput').value.trim();
+            Store.setWebhookUrl(webhookUrl);
+
+            const respondentName = document.getElementById('respondentName').value.trim();
+            const respondentRole = document.getElementById('respondentRole').value.trim();
+            const umkmName = document.getElementById('umkmSelect').value;
+
+            const rawRatings = {
+                demands: parseInt(document.querySelector('input[name="q1"]:checked')?.value || 4, 10),
+                control: parseInt(document.querySelector('input[name="q2"]:checked')?.value || 4, 10),
+                managerSupport: parseInt(document.querySelector('input[name="q3"]:checked')?.value || 4, 10),
+                peerSupport: parseInt(document.querySelector('input[name="q4"]:checked')?.value || 4, 10),
+                relationships: parseInt(document.querySelector('input[name="q5"]:checked')?.value || 4, 10),
+                roleClarity: parseInt(document.querySelector('input[name="q6"]:checked')?.value || 4, 10)
             };
 
-            await Store.saveAssessment(newScores);
+            const result = await Store.submitAssessment({
+                respondentName,
+                respondentRole,
+                umkmName,
+                rawRatings
+            });
 
-            const overall = Store.getOverallScore();
-            document.getElementById('modalDesc').innerHTML = `Skor kesehatan organisasi terbaru: <strong style="color: var(--primary); font-size: 16px;">${overall}%</strong>. Data asesmen telah berhasil dicatat ke database.`;
+            const stats = Store.getParticipationStats();
+            document.getElementById('modalDesc').innerHTML =
+                `Skor akumulasi organisasi terbaru: <strong style="color: var(--primary); font-size: 16px;">${result.overallScore}%</strong> ` +
+                `dari total <strong>${stats.totalSubmissions} responden</strong>. Data telah tersimpan dan siap ditinjau.`;
+
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Hitung, Akumulasi & Simpan Asesmen';
             document.getElementById('successModal').classList.add('active');
         }
     </script>
 </body>
 </html>
-

@@ -58,13 +58,13 @@
             </ul>
 
             <div class="sidebar-profile">
-                <div class="user-avatar">BS</div>
+                <div class="user-avatar">XX</div>
                 <div style="flex-grow: 1; overflow: hidden;">
                     <div id="userName" style="font-size: 13px; font-weight: 700; color: var(--text-heading); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">
-                        Budi Santoso
+                        Memuat...
                     </div>
                     <div id="userRole" style="font-size: 11px; color: var(--text-muted);">
-                        Pemilik UMKM
+                        Akun
                     </div>
                 </div>
                 <button onclick="handleLogout()" style="background: none; border: none; cursor: pointer; color: var(--danger); font-size: 14px;" title="Keluar">
@@ -76,119 +76,20 @@
         <!-- MAIN CONTENT AREA -->
         <main class="app-main">
             
-            <div style="margin-bottom: 28px;">
-                <h1 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 6px;">
-                    6 Faktor Penilaian Kesehatan Organisasi
-                </h1>
-                <p style="font-size: 13.5px; color: var(--text-muted);">
-                    Setiap dimensi merefleksikan aspek vital operasional UMKM yang memengaruhi kepuasan kerja dan risiko stres tim.
-                </p>
+            <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 28px;">
+                <div>
+                    <h1 style="font-size: 24px; font-weight: 800; color: var(--text-heading); margin-bottom: 6px;">
+                        6 Faktor Penilaian Kesehatan Organisasi
+                    </h1>
+                    <p id="factorsHeaderDesc" style="font-size: 13.5px; color: var(--text-muted);">
+                        Memuat akumulasi skor dimensi operasional UMKM Anda.
+                    </p>
+                </div>
+                <a href="asesmen.html" class="btn btn-primary btn-sm">+ Perbarui Lewat Asesmen</a>
             </div>
 
-            <div class="grid-2" style="gap: 22px;">
-                
-                <!-- Faktor 1 -->
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="badge badge-primary">Faktor 1</span>
-                        <strong id="f1_score" style="font-size: 18px; color: var(--primary);">82%</strong>
-                    </div>
-                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px;">
-                        Tuntutan Tugas (Demands)
-                    </h3>
-                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-                        Mengukur beban kerja fisik dan mental, batasan tenggat waktu (deadline), jam kerja lembur, serta kelayakan lingkungan fisik operasional.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-heading); background: var(--bg-base); padding: 10px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
-                        <strong>Indikator Evaluasi:</strong> Kapasitas kerja harian & pola istirahat.
-                    </div>
-                </div>
-
-                <!-- Faktor 2 -->
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="badge badge-sage">Faktor 2</span>
-                        <strong id="f2_score" style="font-size: 18px; color: var(--accent-sage);">88%</strong>
-                    </div>
-                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px;">
-                        Kendali Kerja (Control)
-                    </h3>
-                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-                        Tingkat otonomi dan kebebasan yang dimiliki karyawan dalam menentukan metode kerja, urutan prioritas, dan inisiatif pemecahan masalah.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-heading); background: var(--bg-base); padding: 10px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-sage);">
-                        <strong>Indikator Evaluasi:</strong> Otonomi operasional & delegasi wewenang.
-                    </div>
-                </div>
-
-                <!-- Faktor 3 -->
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="badge badge-cyan">Faktor 3</span>
-                        <strong id="f3_score" style="font-size: 18px; color: var(--accent-cyan-dark);">90%</strong>
-                    </div>
-                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px;">
-                        Dukungan Atasan (Manager Support)
-                    </h3>
-                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-                        Ketersediaan bimbingan langsung, umpan balik yang membangun, kepedulian atas kesejahteraan staf, dan keterbukaan komunikasi pimpinan.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-heading); background: var(--bg-base); padding: 10px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-cyan);">
-                        <strong>Indikator Evaluasi:</strong> Kepemimpinan empatik & mentoring rutin.
-                    </div>
-                </div>
-
-                <!-- Faktor 4 -->
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="badge badge-primary">Faktor 4</span>
-                        <strong id="f4_score" style="font-size: 18px; color: var(--primary);">85%</strong>
-                    </div>
-                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px;">
-                        Dukungan Rekan (Peer Support)
-                    </h3>
-                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-                        Kekompakan tim, solidaritas rekan sejawat, dan kesiapan saling membantu saat rekan lain mengalami lonjakan beban tugas mendesak.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-heading); background: var(--bg-base); padding: 10px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--primary);">
-                        <strong>Indikator Evaluasi:</strong> Solidaritas tim & keterbukaan koordinasi.
-                    </div>
-                </div>
-
-                <!-- Faktor 5 -->
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="badge badge-sage">Faktor 5</span>
-                        <strong id="f5_score" style="font-size: 18px; color: var(--warning);">78%</strong>
-                    </div>
-                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px;">
-                        Hubungan Interpersonal (Relationships)
-                    </h3>
-                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-                        Terbebasnya lingkungan kerja dari perpecahan internal, saling menjatuhkan, bullying, serta terjaganya suasana saling menghargai.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-heading); background: var(--bg-base); padding: 10px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--warning);">
-                        <strong>Indikator Evaluasi:</strong> Mitigasi friksi personal & etika kerja.
-                    </div>
-                </div>
-
-                <!-- Faktor 6 -->
-                <div class="card">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                        <span class="badge badge-cyan">Faktor 6</span>
-                        <strong id="f6_score" style="font-size: 18px; color: var(--accent-sage);">92%</strong>
-                    </div>
-                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px;">
-                        Kejelasan Peran (Role Clarity)
-                    </h3>
-                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 16px;">
-                        Pemahaman pasti karyawan atas tugas pokok, batasan wewenang, target hasil kerja, serta keselarasan dengan tujuan bisnis UMKM.
-                    </p>
-                    <div style="font-size: 12px; color: var(--text-heading); background: var(--bg-base); padding: 10px 14px; border-radius: var(--radius-sm); border-left: 3px solid var(--accent-cyan);">
-                        <strong>Indikator Evaluasi:</strong> Job description transparan & target terukur.
-                    </div>
-                </div>
-
+            <div id="factorsGrid" class="grid-2" style="gap: 22px;">
+                <!-- Rendered dynamically by JS -->
             </div>
 
         </main>
@@ -196,22 +97,62 @@
 
     <script src="js/app.js"></script>
     <script>
-        function renderScores() {
-            const s = Store.get().scores;
-            document.getElementById('f1_score').textContent = s.demands + '%';
-            document.getElementById('f2_score').textContent = s.control + '%';
-            document.getElementById('f3_score').textContent = s.managerSupport + '%';
-            document.getElementById('f4_score').textContent = s.peerSupport + '%';
-            document.getElementById('f5_score').textContent = s.relationships + '%';
-            document.getElementById('f6_score').textContent = s.roleClarity + '%';
+        function getStatusMeta(score, hasSubmissions) {
+            if (!hasSubmissions) return { text: 'Belum Diukur', cls: 'badge-primary', color: '#64748B' };
+            if (score >= 80) return { text: 'Optimal', cls: 'badge-sage', color: '#10B981' };
+            if (score >= 65) return { text: 'Waspada', cls: 'badge-cyan', color: '#0284C7' };
+            return { text: 'Perlu Intervensi', cls: 'badge-danger', color: '#EF4444' };
+        }
+
+        function renderFactorsPage() {
+            const account = Store.getActiveAccount();
+            if (!account) return;
+
+            UI.syncSidebarProfile();
+            const analysis = Store.getFactorAnalysis();
+            const stats = Store.getParticipationStats();
+            const hasSubmissions = stats.totalSubmissions > 0;
+
+            document.getElementById('factorsHeaderDesc').textContent =
+                `Akumulasi real-time dari ${stats.totalSubmissions} responden pada akun ${account.user.umkm || account.user.email} (Indeks Total: ${analysis.overall}%).`;
+
+            const grid = document.getElementById('factorsGrid');
+            grid.innerHTML = '';
+
+            analysis.factors.forEach(f => {
+                const st = getStatusMeta(f.score, hasSubmissions);
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <span class="badge ${f.badgeClass}">Faktor ${f.number}</span>
+                            <span class="badge ${st.cls}">${st.text}</span>
+                        </div>
+                        <strong style="font-size: 20px; color: ${st.color};">${f.score}%</strong>
+                    </div>
+                    <h3 style="font-size: 16px; font-weight: 700; color: var(--text-heading); margin-bottom: 6px;">
+                        ${f.label}
+                    </h3>
+                    <p style="font-size: 13px; color: var(--text-muted); line-height: 1.5; margin-bottom: 14px;">
+                        ${f.description}
+                    </p>
+                    <div style="width: 100%; height: 7px; background: #E2E8F0; border-radius: 99px; overflow: hidden; margin-bottom: 14px;">
+                        <div style="width: ${f.score}%; height: 100%; background: ${st.color}; border-radius: 99px; transition: width 0.35s ease;"></div>
+                    </div>
+                    <div style="font-size: 12px; color: var(--text-heading); background: var(--bg-base); padding: 10px 14px; border-radius: var(--radius-sm); border-left: 3px solid ${st.color};">
+                        <strong>Indikator Evaluasi:</strong> ${f.indicator}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
         }
 
         document.addEventListener('DOMContentLoaded', async () => {
-            renderScores();
+            renderFactorsPage();
             await Store.syncWithBackend();
-            renderScores();
+            renderFactorsPage();
         });
     </script>
 </body>
 </html>
-
